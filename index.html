@@ -2,11 +2,11 @@
 <meta charset="utf-8">
 <style>
 .bar {
-  fill: steelblue;
+  fill: #FF2C2E;
 }
 
 .bar:hover {
-  fill: lightblue;
+  fill: rgb(253, 76, 79);
 }
 
 .axis text {
@@ -40,8 +40,6 @@
 
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
-const lerp = (a, b, n) =>(1 - n) * a + n * b;
-
 ///////////////////////
 // Parse the Data
 d3.csv("data.csv", data => {
@@ -114,7 +112,7 @@ d3.csv("data.csv", data => {
       .attr("class", "tooltip");
 
   bar.on("mouseover", function(d) {
-        tooltip.html(d['x'])
+        tooltip.html(d['y'])
             .style("visibility", "visible");
       })
       .on("mousemove", function(d) {
