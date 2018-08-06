@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <style>
 .bar {
-  fill: #FF2C2E;
+  /* fill: #FF2C2E; */
 }
 
 .bar:hover {
@@ -40,6 +40,41 @@
 
 <script src="//d3js.org/d3.v3.min.js"></script>
 <script>
+  let i = 0;
+  let animationEnabled = true;
+const animateBar = (bars, y, height) =>
+{
+  let bar = d3.select(bars[0][i]);
+
+  const shift = 10;
+  
+  setTimeout(() => {
+    i++;
+    if(i < bars[0].length) {
+      requestAnimationFrame(() => animateBar(bars, y, height))
+    } else {
+      i = 0;
+    }
+  }, 50)
+
+  bar.transition()
+    .duration(200)
+    .ease("ease")
+    .attr("y",d => y(d['y']) - shift)
+    .attr("height", d => height + shift - y(d['y']))
+    .attr("fill", '#8b0000')
+    .transition()
+    .duration(100)
+    .ease("ease")
+    .attr("y",d => y(d['y']))
+    .attr("height", d => height - y(d['y']))
+    .attr("fill", '#FF2C2E')
+}
+
+
+const animateChart = (bar, y, height) => {
+  animateBar(bar, y, height)
+}
 ///////////////////////
 // Parse the Data
 d3.csv("data.csv", data => {
@@ -48,11 +83,11 @@ d3.csv("data.csv", data => {
   // Chart Size Setup
   var margin = { top: 35, right: 0, bottom: 30, left: 40 };
 
-  var width = 960 - margin.left - margin.right;
+  var chartWidth = window.innerWidth - margin.left - margin.right;
   var height = 500 - margin.top - margin.bottom;
 
   var chart = d3.select(".chart")
-      .attr("width", 960)
+      .attr("width", chartWidth)
       .attr("height", 500)
     .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -61,7 +96,7 @@ d3.csv("data.csv", data => {
   // Scales
   var x = d3.scale.ordinal()
       .domain(data.map(d => d['x']))
-      .rangeRoundBands([0, width], 0.1);
+      .rangeRoundBands([0, chartWidth], 0.1);
 
   var y = d3.scale.linear()
       .domain([0, d3.max(data, d => d['y']) * 1.1])
@@ -94,6 +129,7 @@ d3.csv("data.csv", data => {
   var bar = chart.selectAll(".bar")
       .data(data)
     .enter().append("rect")
+      .attr("fill", '#FF2C2E')
       .attr("class", "bar")
       .attr("x", d => x(d['x']))
       .attr("y", height)
@@ -122,7 +158,22 @@ d3.csv("data.csv", data => {
       .on("mouseout", function(d) {
         tooltip.style("visibility", "hidden");
       });
+    
+  setInterval(() => {
+    if(animationEnabled) {
+      animateChart(bar, y, height)
+    }
+  }, 5000)
 });
+
+// const chart = d3.select(".chart")
+// const bar = chart.selectAll(".bar")
+
+// const changeScale = (newScale) => {
+//     const bar = chart.selectAll(".bar")
+//     div.style.transform = div.style.transform
+//     .replace(/scale\([0-9|\.]*\)/, 'scale(' + newScale + ')');
+// }
 </script>
 
 <body>
