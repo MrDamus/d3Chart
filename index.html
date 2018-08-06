@@ -160,8 +160,10 @@ d3.csv("data.csv", data => {
       });
     
   setInterval(() => {
-    if(animationEnabled) {
-      animateChart(bar, y, height)
+    if(!window.document.hidden){
+      if(animationEnabled) {
+        animateChart(bar, y, height)
+      }
     }
   }, 5000)
 });
